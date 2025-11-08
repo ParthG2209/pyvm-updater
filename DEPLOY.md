@@ -28,13 +28,17 @@ cd /home/shreyasmene06/coding/sideProjects
 # Clean previous builds
 rm -rf build/ dist/ *.egg-info
 
-# Build the package
+# Build the package (use the venv python if needed)
 python -m build
+# OR if that fails:
+# /home/shreyasmene06/coding/.venv/bin/python -m build
 ```
 
 This creates:
-- `dist/pyvm-updater-1.0.0.tar.gz` (source distribution)
-- `dist/pyvm_updater-1.0.0-py3-none-any.whl` (wheel)
+- `dist/pyvm-updater-1.0.2.tar.gz` (source distribution)
+- `dist/pyvm_updater-1.0.2-py3-none-any.whl` (wheel)
+
+✅ **Build completed successfully!** Your packages are ready in the `dist/` folder.
 
 ## Step 3: Test on TestPyPI (Optional but Recommended)
 

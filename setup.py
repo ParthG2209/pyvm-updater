@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="pyvm-updater",
-    version="1.0.2",
+    version="1.1.0",
     author="Shreyas Mene",
     author_email="shreyasmene06@gmail.com",
     description="Cross-platform Python version checker and updater",

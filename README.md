@@ -71,11 +71,32 @@ cd pyvm-updater
 pip install --user .
 ```
 
-### Method 2: Install via pip (When Published to PyPI)
+### Method 2: Install via pip (Published on PyPI)
 
 ```bash
-pip install pyvm-updater
+pip install --user pyvm-updater
 ```
+
+**Note for Linux users:** On newer systems (Ubuntu 23.04+, Debian 12+), use `--user` flag or see [troubleshooting](#-troubleshooting) if you get "externally-managed-environment" error.
+
+### Method 3: Install via pipx (Recommended for CLI tools)
+
+```bash
+# Install pipx if you don't have it
+sudo apt install pipx   # Ubuntu/Debian
+# or: brew install pipx  # macOS
+
+# Install pyvm-updater
+pipx install pyvm-updater
+
+# If pyvm command not found, add to PATH:
+pipx ensurepath
+
+# Then restart your terminal or run:
+source ~/.bashrc   # or source ~/.zshrc
+```
+
+**Why pipx?** It automatically manages virtual environments for CLI tools, preventing conflicts.
 
 ### Method 3: Install from source (For Developers)
 
@@ -195,6 +216,8 @@ py --list
 
 **Note:** Your default `python` or `python3` command might still point to your old version. This is normal and prevents breaking existing scripts. Use the specific version number to access the new Python.
 
+**Want to make the new Python your default?** See [Making Updated Python the Default](#making-updated-python-the-default) below.
+
 ### Show system information
 
 ```bash
@@ -221,6 +244,89 @@ Admin/Sudo:       No
 ```bash
 pyvm --version
 ```
+
+---
+
+## 🔄 Making Updated Python the Default
+
+After updating Python, you'll have **multiple versions** installed. The new version (e.g., `python3.14`) is installed, but your default `python3` command may still use the old version. This is intentional to prevent breaking system scripts.
+
+### Check Your Current Setup
+
+```bash
+# Check default Python version
+python3 --version          # Shows: Python 3.12.3
+
+# Check newly installed version
+python3.14 --version       # Shows: Python 3.14.0
+
+# See all installed versions
+ls /usr/bin/python* | grep -E 'python[0-9]'
+```
+
+### Option 1: Set New Python as System Default (Linux - Recommended)
+
+Use `update-alternatives` to manage Python versions globally:
+
+```bash
+# Add both versions to alternatives
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 2
+
+# Select which version to use as default
+sudo update-alternatives --config python3
+```
+
+Choose the number for Python 3.14 when prompted. Now `python3 --version` will show 3.14.0! ✅
+
+**To switch back later:**
+```bash
+sudo update-alternatives --config python3
+```
+
+### Option 2: Create an Alias (User-Level Only)
+
+Add to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+alias python3='python3.14'
+alias python='python3.14'
+```
+
+Then reload:
+```bash
+source ~/.bashrc  # or source ~/.zshrc
+```
+
+### Option 3: Use Specific Version (Safest)
+
+Always specify the version you want:
+
+```bash
+python3.14 your_script.py
+python3.14 -m venv myenv
+```
+
+This is the **safest approach** as it doesn't change system behavior.
+
+### For Windows Users
+
+Windows Python Launcher (`py`) handles multiple versions automatically:
+
+```bash
+# Use specific version
+py -3.14 your_script.py
+
+# List all versions
+py --list
+
+# Set default in py.ini (optional)
+# Create/edit: C:\Windows\py.ini
+# Add: [defaults]
+#      python=3.14
+```
+
+---
 
 ## Platform-Specific Notes
 
@@ -273,18 +379,68 @@ pyvm --version
 
 ## 🔧 Troubleshooting
 
+### "externally-managed-environment" error
+
+**Error message:**
+```
+error: externally-managed-environment
+× This environment is externally managed
+```
+
+This is a security feature on newer Linux systems (Ubuntu 23.04+, Debian 12+) that prevents breaking system Python packages.
+
+**Solutions:**
+
+**Option 1: Use `--user` flag (Recommended)**
+```bash
+pip install --user pyvm-updater
+```
+
+**Option 2: Use `pipx` (Best for CLI tools)**
+```bash
+# Install pipx first
+sudo apt install pipx
+
+# Install pyvm-updater with pipx
+pipx install pyvm-updater
+```
+
+**Option 3: Use a virtual environment**
+```bash
+python3 -m venv myenv
+source myenv/bin/activate
+pip install pyvm-updater
+```
+
+**Option 4: Override (NOT recommended)**
+```bash
+pip install --break-system-packages pyvm-updater  # ⚠️ Not recommended
+```
+
 ### "pyvm: command not found"
 
 The installation directory is not in your PATH.
 
-**Linux/macOS:**
+**If you installed with `pip install --user`:**
 ```bash
 # Add to your ~/.bashrc or ~/.zshrc
 export PATH="$HOME/.local/bin:$PATH"
 
-# Reload your shell
+# Then reload your shell
 source ~/.bashrc  # or source ~/.zshrc
 ```
+
+**If you installed with `pipx`:**
+```bash
+# Add pipx bin directory to PATH
+pipx ensurepath
+
+# Then restart your terminal OR reload:
+source ~/.bashrc  # for bash
+source ~/.zshrc   # for zsh
+```
+
+After running `pipx ensurepath`, you should see a message that PATH was updated. Restart your terminal to apply changes.
 
 **Windows:**
 - Add `C:\Users\YourName\AppData\Local\Programs\Python\Python3xx\Scripts` to PATH
@@ -341,6 +497,8 @@ py --list                     # Windows
 python3.14 --version          # Linux/macOS
 py -3.14 --version           # Windows
 ```
+
+**Want to make the new Python your default?** See the detailed guide: [Making Updated Python the Default](#-making-updated-python-the-default)
 
 ## Development
 

@@ -440,6 +440,102 @@ def check_python_version(silent: bool = False) -> Tuple[str, Optional[str], bool
         return local_ver, latest_ver, False
 
 
+def prompt_set_as_default(version_str: str, os_name: str, auto_mode: bool = False):
+    """
+    Prompt user if they want to set the new Python as default,
+    or show them how to access it
+    """
+    # Extract major.minor for display
+    try:
+        parts = version_str.split('.')
+        major_minor = f"{parts[0]}.{parts[1]}"
+    except (ValueError, IndexError):
+        major_minor = version_str
+    
+    click.echo("\n" + "=" * 60)
+    click.echo("🔧 Setting Up Your New Python")
+    click.echo("=" * 60)
+    
+    if auto_mode:
+        # In auto mode, just show the instructions without prompting
+        _show_access_instructions(version_str, major_minor, os_name)
+        return
+    
+    # Ask if user wants to set as default (Linux only)
+    if os_name == 'linux':
+        click.echo(f"\n📌 Python {version_str} has been installed successfully!")
+        click.echo(f"\nYour default 'python3' command still points to your old version.")
+        click.echo(f"This prevents breaking system scripts that depend on it.")
+        
+        if click.confirm(f"\n❓ Would you like to set Python {major_minor} as your system default?", default=False):
+            _set_python_default_linux(major_minor)
+        else:
+            _show_access_instructions(version_str, major_minor, os_name)
+    else:
+        # For Windows and macOS, just show instructions
+        _show_access_instructions(version_str, major_minor, os_name)
+
+
+def _set_python_default_linux(major_minor: str):
+    """Set the new Python as the system default on Linux"""
+    click.echo(f"\n🔧 Setting Python {major_minor} as system default...")
+    click.echo("\nThis requires sudo privileges.")
+    
+    commands = [
+        f"sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1",
+        f"sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python{major_minor} 2",
+        f"sudo update-alternatives --config python3"
+    ]
+    
+    click.echo("\nRun these commands:")
+    click.echo("-" * 60)
+    for cmd in commands:
+        click.echo(f"  {cmd}")
+    click.echo("-" * 60)
+    
+    click.echo("\n📝 When prompted, select the number for Python " + major_minor)
+    click.echo("\n✅ After running these commands, 'python3 --version' will show " + major_minor)
+
+
+def _show_access_instructions(version_str: str, major_minor: str, os_name: str):
+    """Show instructions on how to access the newly installed Python"""
+    click.echo(f"\n✅ Python {version_str} is installed and ready to use!")
+    click.echo("\n📚 How to access your new Python version:")
+    click.echo("-" * 60)
+    
+    if os_name == 'linux' or os_name == 'darwin':
+        click.echo(f"\n1️⃣  Run scripts with the new version:")
+        click.echo(f"    python{major_minor} your_script.py")
+        
+        click.echo(f"\n2️⃣  Create a virtual environment:")
+        click.echo(f"    python{major_minor} -m venv myproject")
+        click.echo(f"    source myproject/bin/activate")
+        click.echo(f"    python --version  # Will show {version_str}")
+        
+        click.echo(f"\n3️⃣  Check it's installed:")
+        click.echo(f"    python{major_minor} --version")
+        
+        if os_name == 'linux':
+            click.echo(f"\n4️⃣  Set as default later (optional):")
+            click.echo(f"    sudo update-alternatives --config python3")
+    
+    elif os_name == 'windows':
+        click.echo(f"\n1️⃣  Use Python Launcher:")
+        click.echo(f"    py -{major_minor} your_script.py")
+        
+        click.echo(f"\n2️⃣  List all Python versions:")
+        click.echo(f"    py --list")
+        
+        click.echo(f"\n3️⃣  Create a virtual environment:")
+        click.echo(f"    py -{major_minor} -m venv myproject")
+        click.echo(f"    myproject\\Scripts\\activate")
+    
+    click.echo("-" * 60)
+    click.echo("\n💡 Tip: Your old Python version is still available and won't break")
+    click.echo("    existing scripts. Use the specific version when you need it!")
+    click.echo("\n⚠️  Remember to restart your terminal/IDE to ensure PATH is updated.")
+
+
 @click.group(invoke_without_command=True)
 @click.pass_context
 @click.option('--version', is_flag=True, help='Show tool version')
@@ -516,8 +612,9 @@ def update(auto):
         
         if success:
             click.echo("\n✅ Update process completed!")
-            click.echo("⚠️  Note: You may need to restart your terminal/IDE")
-            click.echo("    to use the new Python version.")
+            
+            # Prompt user about setting as default
+            prompt_set_as_default(latest_ver, os_name, auto)
         else:
             click.echo("\n⚠️  Update process encountered issues.")
             click.echo("    Please check the messages above.")
