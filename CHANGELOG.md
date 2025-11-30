@@ -5,7 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - 2024-11-09
+## [1.2.1] - 2025-11-30 🚨 CRITICAL SECURITY FIX
+
+### 🚨 BREAKING CHANGES
+- **REMOVED**: `pyvm set-default` command (was causing system crashes)
+- **REMOVED**: `--set-default` flag from `pyvm update` command
+- **CHANGED**: Tool now ONLY installs Python side-by-side, never modifies system defaults
+
+### Fixed (Critical)
+- **System freeze issue**: Removed all code that modified `/usr/bin/python3` symlink via `update-alternatives`
+- **Terminal crashes**: Eliminated dangerous system Python default modification that broke package managers
+- **System GUI failures**: Removed code that could prevent system settings from opening
+- **Package manager corruption**: No longer touches system Python configuration
+
+### Removed
+- `_set_python_default_linux()` function (~150 lines of dangerous code)
+- `prompt_set_as_default()` function
+- `_show_access_instructions()` function (replaced with safe version)
+- `pyvm set-default` CLI command
+- `--set-default` flag from update command
+
+### Added
+- `show_python_usage_instructions()` - Safe, read-only instruction display
+- Comprehensive safety documentation (`CRITICAL_SECURITY_FIX_v1.2.1.md`)
+- Clear warnings in README about safe behavior
+- Instructions for using Python via virtual environments (recommended approach)
+
+### Changed
+- `update_python_linux()` now only installs Python, never modifies system defaults
+- All docstrings updated to clarify safe, non-invasive behavior
+- CLI help text updated to emphasize safety
+- Tool version bumped to 1.2.1
+
+### Documentation
+- Added `CRITICAL_SECURITY_FIX_v1.2.1.md` with recovery instructions
+- Updated README with prominent safety warning
+- Added `QUICK_REFERENCE.md` for quick command comparison
+- Updated all examples to show safe usage patterns
+
+**Migration Guide**: If you were using `pyvm set-default`, switch to virtual environments:
+```bash
+python3.12 -m venv myproject
+source myproject/bin/activate
+```
+
+**For Affected Users**: See `CRITICAL_SECURITY_FIX_v1.2.1.md` for system recovery instructions.
+
+---
+
+## [1.2.0] - 2024-11-09 ⚠️ DEPRECATED - Contains System-Breaking Code
 
 ### Added
 - **`--set-default` flag**: New option for `pyvm update --set-default` to automatically set the newly installed Python as system default (Linux only)

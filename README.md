@@ -1,6 +1,25 @@
 # Python Version Manager (pyvm)
 
-A cross-platform CLI tool to check and update your Python installation to the latest stable version.
+A cross-platform CLI tool to check and install the latest Python version **side-by-side** with your existing Python.
+
+## 🚨 CRITICAL UPDATE (v1.2.1)
+
+**If you're using v1.2.0 or earlier:** Please update immediately!
+
+Previous versions contained system-breaking code that could freeze Linux systems. **v1.2.1 is completely safe** - it only installs Python, never modifies system defaults.
+
+```bash
+# Update to the safe version
+cd pyvm-updater
+git pull
+pip install --user -e .
+```
+
+See [docs/CRITICAL_SECURITY_FIX_v1.2.1.md](docs/CRITICAL_SECURITY_FIX_v1.2.1.md) for details and recovery instructions.
+
+📚 **Documentation**: [Installation Guide](docs/INSTALL.md) | [Quick Start](docs/QUICKSTART.md) | [Quick Reference](docs/QUICK_REFERENCE.md)
+
+---
 
 ## ⚡ Quick Start (3 Steps)
 
@@ -20,13 +39,13 @@ That's it! 🎉
 ## Features
 
 - ✅ Check your current Python version against the latest stable release
-- 🔄 Automatically download and install Python updates
+- 🔄 Install the latest Python side-by-side with your existing version
 - 🖥️ Cross-platform support (Windows, Linux, macOS)
 - 📊 Detailed system information display
 - 🚀 Simple and intuitive CLI interface
-- 🎯 **NEW:** Automatically set Python as system default (Linux)
-- 🔧 **NEW:** Manage multiple Python versions with ease
-- ⚡ **NEW:** One-command setup with `--set-default` flag
+- 🛡️ **SAFE:** Never modifies your system Python defaults
+- 🔧 Multiple Python versions coexist peacefully
+- 📚 Clear instructions on how to use the new version
 
 ## 🚀 Quick Start for New Users
 
@@ -183,66 +202,51 @@ Update to the latest version:
 pyvm update
 ```
 
-For automatic update without confirmation:
+For automatic installation without confirmation:
 
 ```bash
 pyvm update --auto
 ```
 
-**NEW:** Automatically set as system default (Linux only):
+**IMPORTANT:** This command installs Python side-by-side. Your system Python remains unchanged.
 
-```bash
-pyvm update --set-default
-```
+### After Installing - How to Use the New Python
 
-Or combine both flags:
-
-```bash
-pyvm update --auto --set-default
-```
-
-### Set Python as Default (Linux)
-
-**NEW:** Set an existing Python version as system default:
-
-```bash
-# List available Python versions
-pyvm set-default
-
-# Set a specific version as default
-pyvm set-default 3.12
-pyvm set-default 3.14
-```
-
-This command automatically configures `update-alternatives` to make the specified Python version your system default. No more manual configuration needed!
-
-### After Updating - How to Use the New Python
-
-Once the update completes, you can use the new Python version:
+Once installation completes, the new Python is available side-by-side with your existing version:
 
 **Linux/macOS:**
 ```bash
-# Use the specific version
-python3.14 your_script.py
+# Your old Python (unchanged)
+python3 --version          # Shows: Python 3.10.x (or whatever you had)
 
-# Or create a virtual environment with it
-python3.14 -m venv myproject
+# Your new Python (side-by-side)
+python3.12 --version       # Shows: Python 3.12.x
+
+# Use the new Python for a script
+python3.12 your_script.py
+
+# Create a virtual environment with the new Python
+python3.12 -m venv myproject
 source myproject/bin/activate
-python --version  # Will show 3.14.0 in this environment
+python --version           # Now shows 3.12.x in this venv
 ```
 
 **Windows:**
 ```bash
-# Use the specific version
-py -3.14 your_script.py
-
-# Or check Python launcher
+# List all Python versions
 py --list
+
+# Use specific version
+py -3.12 your_script.py
+
+# Create virtual environment
+py -3.12 -m venv myproject
+myproject\Scripts\activate
 ```
 
-**Note:** Your default `python` or `python3` command might still point to your old version. This is normal and prevents breaking existing scripts. Use the specific version number to access the new Python.
+**Why doesn't `python3` automatically use the new version?**
 
-**Want to make the new Python your default?** See [Making Updated Python the Default](#making-updated-python-the-default) below.
+This is intentional and safe! Your system tools (package managers, system utilities) depend on the Python version they were built with. Changing the default could break them. The tool gives you the new Python to use when YOU choose, without risking your system.
 
 ### Show system information
 
@@ -273,65 +277,71 @@ pyvm --version
 
 ---
 
-## 🔄 Making Updated Python the Default
+## 🔄 Using Your New Python Version
 
-After updating Python, you'll have **multiple versions** installed. The new version (e.g., `python3.14`) is installed, but your default `python3` command may still use the old version. This is intentional to prevent breaking system scripts.
+After installation, you have **multiple Python versions** side-by-side. Here's how to use them effectively:
 
-### Check Your Current Setup
+### Check Your Setup
 
 ```bash
-# Check default Python version
-python3 --version          # Shows: Python 3.12.3
+# Your system Python (unchanged)
+python3 --version          # Shows: Python 3.10.x
 
-# Check newly installed version
-python3.14 --version       # Shows: Python 3.14.0
+# Your new Python (side-by-side)
+python3.12 --version       # Shows: Python 3.12.x
 
 # See all installed versions
 ls /usr/bin/python* | grep -E 'python[0-9]'
 ```
 
-### Option 1: Set New Python as System Default (Linux - Recommended)
+### Best Practice: Use Virtual Environments (Recommended)
 
-Use `update-alternatives` to manage Python versions globally:
+This is the safest and most flexible approach:
 
 ```bash
-# Add both versions to alternatives
+# Create project with new Python
+python3.12 -m venv myproject
+source myproject/bin/activate
+
+# Now you're using the new Python in this project
+python --version           # Shows: Python 3.12.x
+pip install -r requirements.txt
+
+# Deactivate when done
+deactivate
+```
+
+**Benefits:**
+- ✅ Isolated dependencies per project
+- ✅ No system modifications
+- ✅ Easy to switch between Python versions
+- ✅ No risk of breaking system tools
+
+### Alternative: Direct Invocation
+
+Always specify which version you want:
+
+```bash
+# Run scripts with new Python
+python3.12 your_script.py
+
+# Install packages for new Python
+python3.12 -m pip install requests
+```
+
+### Option for Advanced Users: Change System Default
+
+⚠️ **Warning:** Only do this if you understand the risks!
+
+Changing your system's default Python can break system tools. If you still want to:
+
+```bash
+# Manually configure (at your own risk)
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.14 2
-
-# Select which version to use as default
 sudo update-alternatives --config python3
 ```
 
-Choose the number for Python 3.14 when prompted. Now `python3 --version` will show 3.14.0! ✅
-
-**To switch back later:**
-```bash
-sudo update-alternatives --config python3
-```
-
-### Option 2: Create an Alias (User-Level Only)
-
-Add to your `~/.bashrc` or `~/.zshrc`:
-
-```bash
-alias python3='python3.14'
-alias python='python3.14'
-```
-
-Then reload:
-```bash
-source ~/.bashrc  # or source ~/.zshrc
-```
-
-### Option 3: Use Specific Version (Safest)
-
-Always specify the version you want:
-
-```bash
-python3.14 your_script.py
-python3.14 -m venv myenv
-```
+**We do NOT recommend this approach.** Virtual environments are much safer.
 
 This is the **safest approach** as it doesn't change system behavior.
 
