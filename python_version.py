@@ -360,17 +360,21 @@ def update_python_macos(version_str: str) -> bool:
         print(f"Error: Invalid version string: {version_str}")
         return False
     
+    # Extract major.minor version for reuse in both branches
+    try:
+        parts = version_str.split('.')
+        if len(parts) < 2:
+            print(f"Error: Invalid version format: {version_str}")
+            return False
+        major_minor = f"{parts[0]}.{parts[1]}"
+    except (ValueError, IndexError) as e:
+        print(f"Error parsing version: {e}")
+        return False
+    
     if shutil.which('brew'):
         print("Using Homebrew...")
         
         try:
-            # Extract major.minor version for Homebrew formula (e.g., "3.11" from "3.11.5")
-            parts = version_str.split('.')
-            if len(parts) < 2:
-                print(f"Error: Invalid version format: {version_str}")
-                return False
-            major_minor = f"{parts[0]}.{parts[1]}"
-            
             # Update Homebrew
             print("Updating Homebrew...")
             result = subprocess.run(["brew", "update"], check=False, capture_output=True, text=True)
@@ -412,7 +416,7 @@ def update_python_macos(version_str: str) -> bool:
         
         print("\n📦 Option 2: Install Homebrew first")
         print("   /bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"")
-        print(f"   Then run: brew install python@{version_str.split('.')[0]}.{version_str.split('.')[1]}")
+        print(f"   Then run: brew install python@{major_minor}")
         
         return False
 
@@ -571,9 +575,9 @@ def update(auto, target_version):
         
         if target_version:
             # Validate specified version
-            if not validate_version_string(target_version):
+            if not validate_version_string(target_version) or len(target_version.split('.')) < 3:
                 click.echo(f"❌ Error: Invalid version format: {target_version}")
-                click.echo("Version should be in format: X.Y.Z (e.g., 3.11.5)")
+                click.echo("Version must be in format: X.Y.Z (e.g., 3.11.5)")
                 sys.exit(1)
             
             install_version = target_version
