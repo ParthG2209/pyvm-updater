@@ -16,7 +16,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/shreyasmene06/pyvm-updater",
-    py_modules=["python_version"],
+    py_modules=["python_version", "pyvm_tui"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -41,12 +41,16 @@ setup(
         "click>=8.0.0",
     ],
     extras_require={
+        "tui": [
+            "textual>=0.40.0",
+        ],
         "dev": [
             "pytest>=6.0",
             "pytest-cov>=2.0",
             "black>=21.0",
             "flake8>=3.9",
             "mypy>=0.900",
+            "textual-dev>=1.0.0",
         ],
     },
     entry_points={

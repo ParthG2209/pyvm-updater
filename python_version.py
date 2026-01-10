@@ -554,7 +554,7 @@ def show_python_usage_instructions(version_str: str, os_name: str):
 def cli(ctx, version):
     """Python Version Manager - Check and install Python (does NOT modify system defaults)"""
     if version:
-        click.echo("Python Version Manager v1.2.1")
+        click.echo("Python Version Manager v1.2.3")
         ctx.exit()
     
     if ctx.invoked_subcommand is None:
@@ -659,6 +659,19 @@ def update(auto, target_version):
 
 
 
+
+
+@cli.command()
+def tui():
+    """Launch the interactive TUI interface"""
+    try:
+        from pyvm_tui import run_tui
+        run_tui()
+    except ImportError:
+        click.echo("❌ TUI mode requires the 'textual' package.")
+        click.echo("Install it with: pip install pyvm-updater[tui]")
+        click.echo("Or: pip install textual")
+        sys.exit(1)
 
 
 @cli.command()
