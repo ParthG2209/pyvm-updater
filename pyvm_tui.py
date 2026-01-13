@@ -5,6 +5,7 @@ A clean terminal user interface for managing Python versions
 """
 
 import asyncio
+import platform
 import sys
 from typing import Any, Optional
 
@@ -31,6 +32,7 @@ from python_version import (
     remove_python_windows,
     update_python_linux,
     update_python_macos,
+    update_python_windows,
 )
 
 
@@ -558,9 +560,9 @@ class MainScreen(Screen):
                     success = do_removal()
                     print(f"\n{'='*50}")
                     if success:
-                        print(f"Removal complete!")
+                        print("Removal complete!")
                     else:
-                        print(f"Removal may have had issues.")
+                        print("Removal may have had issues.")
                     print(f"{'='*50}")
                 else:
                     print("Removal cancelled.")
