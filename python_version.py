@@ -22,7 +22,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Any, Optional, cast
+from typing import Any, cast
 
 try:
     import click
@@ -83,7 +83,7 @@ class HistoryManager:
             return []
 
     @staticmethod
-    def get_last_action() -> Optional[dict[Any, Any]]:
+    def get_last_action() -> dict[Any, Any] | None:
         """Get the last successful installation/update action"""
         history = HistoryManager.get_history()
         if not history:
@@ -260,7 +260,7 @@ def get_installed_python_versions() -> list[dict]:
     return versions
 
 
-def get_latest_python_info_with_retry() -> tuple[Optional[str], Optional[str]]:
+def get_latest_python_info_with_retry() -> tuple[str | None, str | None]:
     """Fetch the latest Python version with retry logic"""
     for attempt in range(MAX_RETRIES):
         try:
@@ -278,7 +278,7 @@ def get_latest_python_info_with_retry() -> tuple[Optional[str], Optional[str]]:
     return None, None
 
 
-def get_latest_python_info() -> tuple[Optional[str], Optional[str]]:
+def get_latest_python_info() -> tuple[str | None, str | None]:
     """Fetch the latest Python version and download URLs"""
     URL = "https://www.python.org/downloads/"
 
@@ -305,7 +305,7 @@ def get_latest_python_info() -> tuple[Optional[str], Optional[str]]:
 
         # Get download URL for specific OS
         download_url_raw = download_button.get("href")
-        download_url: Optional[str] = None
+        download_url: str | None = None
         if download_url_raw and isinstance(download_url_raw, str):
             if not download_url_raw.startswith("http"):
                 download_url = f"https://www.python.org{download_url_raw}"
@@ -964,7 +964,7 @@ def remove_python_windows(version_str: str) -> bool:
     print(f"Running uninstaller: {installer_path} /uninstall")
     try:
         # Run uninstaller (interactive)
-        result = subprocess.run([installer_path, "/uninstall"], check=False)
+        result = subprocess.run([installer_path, "/uninstall"], check=False, text=True)
 
         # Cleanup downloaded installer after use
         try:
@@ -1150,7 +1150,7 @@ def remove_python_macos(version_str: str) -> bool:
     return False
 
 
-def check_python_version(silent: bool = False) -> tuple[str, Optional[str], bool]:
+def check_python_version(silent: bool = False) -> tuple[str, str | None, bool]:
     """
     Check local Python version against the latest stable version from python.org
     Returns: (local_version, latest_version, needs_update)
