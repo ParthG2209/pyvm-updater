@@ -22,7 +22,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Any, Dict, List, Optional, cast
 
 try:
     import click
@@ -50,7 +50,7 @@ class HistoryManager:
     """Manages the history of Python version installations and updates"""
 
     @staticmethod
-    def save_history(action: str, version: str):
+    def save_history(action: str, version: str) -> None:
         """Save an action and version to the history file"""
         history = HistoryManager.get_history()
         entry = {
@@ -72,24 +72,23 @@ class HistoryManager:
             print(f"Warning: Could not save history: {e}")
 
     @staticmethod
-    def get_history() -> list[dict]:
+    def get_history() -> List[Dict[Any, Any]]:
         """Load history from the history file"""
         if not HISTORY_FILE.exists():
             return []
         try:
-            with open(HISTORY_FILE, "r") as f:
-                return json.load(f)
+            with open(HISTORY_FILE) as f:
+                return cast(List[Dict[Any, Any]], json.load(f))
         except Exception:
             return []
 
     @staticmethod
-    def get_last_action() -> Optional[dict]:
+    def get_last_action() -> Optional[Dict[Any, Any]]:
         """Get the last successful installation/update action"""
         history = HistoryManager.get_history()
         if not history:
             return None
         return history[-1]
-
 
 
 def get_os_info():

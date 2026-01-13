@@ -637,8 +637,9 @@ class MainScreen(Screen):
 
     def run_rollback_with_suspend(self, version: str) -> None:
         """Run rollback with TUI suspended"""
-        from textual.app import SuspendNotSupported
         import json
+
+        from textual.app import SuspendNotSupported
 
         os_name, _ = get_os_info()
         success = False
