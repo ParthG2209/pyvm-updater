@@ -8,8 +8,6 @@ Your existing Python installation remains unchanged to avoid breaking system too
 
 Requirements:
     pip install requests beautifulsoup4 packaging click
-
-Note: Dependencies are automatically installed via setup.py during CLI installation.
 """
 
 import os
