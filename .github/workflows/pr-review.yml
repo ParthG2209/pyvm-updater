@@ -146,7 +146,10 @@ jobs:
           pip install -e .
       
       - name: Run pip-audit
-        run: pip-audit --strict --skip-editable
+        run: |
+          # Generate requirements excluding editable installs, then audit
+          pip freeze --exclude-editable > /tmp/requirements.txt
+          pip-audit --strict -r /tmp/requirements.txt
 
   # ============================================
   # Unit Tests with Pytest
