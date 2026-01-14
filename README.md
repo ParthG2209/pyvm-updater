@@ -6,10 +6,10 @@ A cross-platform CLI tool with an interactive TUI to check and install Python ve
 
 **Security & Reliability Improvements!**
 
-* **🔐 SHA256 Checksum Verification**: All Python downloads are now verified against official checksums from python.org for enhanced security
-* **🔄 Rollback Command**: Undo your last Python installation with `pyvm rollback` - easily remove versions you no longer need
-* **🐍 Auto pyenv Installation**: On RHEL/CentOS/Fedora systems, pyenv is automatically installed if not present
-* **📝 Type Safety**: Improved type hints throughout the codebase for better reliability
+* **SHA256 Checksum Verification**: All Python downloads are now verified against official checksums from python.org for enhanced security
+* **Rollback Command**: Undo your last Python installation with `pyvm rollback` - easily remove versions you no longer need
+* **Auto pyenv Installation**: On RHEL/CentOS/Fedora systems, pyenv is automatically installed if not present
+* **Type Safety**: Improved type hints throughout the codebase for better reliability
 
 **TUI Enhancements:**
 * **Rollback Button**: Press `B` to rollback your last installation directly from the TUI
