@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyvm-updater"
-version = "2.0.1"
+version = "2.1.0"
 description = "Cross-platform Python version checker and installer (does NOT modify system defaults)"
 readme = "README.md"
 authors = [

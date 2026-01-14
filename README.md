@@ -2,18 +2,20 @@
 
 A cross-platform CLI tool with an interactive TUI to check and install Python versions side-by-side with your existing installation.
 
-## What's New in v2.0.1
+## What's New in v2.1.0
 
-**Complete TUI Redesign!** The interactive terminal interface has been completely overhauled:
+**Security & Reliability Improvements!**
 
-* **Navigate with Tab/Arrows**: Switch between panels with Tab, navigate lists with arrow keys
-* **Press Enter to Install**: Select a version and hit Enter, no typing required
-* **See Everything**: View installed versions, available releases, and status in one screen
-* **Smart Installation**: Auto-uses mise to pyenv to package managers for seamless installs
-* **Mouse Support**: Click anywhere to select and install
-* **Cross-Platform**: Works flawlessly on Linux, macOS, and Windows
+* **🔐 SHA256 Checksum Verification**: All Python downloads are now verified against official checksums from python.org for enhanced security
+* **🔄 Rollback Command**: Undo your last Python installation with `pyvm rollback` - easily remove versions you no longer need
+* **🐍 Auto pyenv Installation**: On RHEL/CentOS/Fedora systems, pyenv is automatically installed if not present
+* **📝 Type Safety**: Improved type hints throughout the codebase for better reliability
 
-Try it: `pyvm tui`
+**TUI Enhancements:**
+* **Rollback Button**: Press `B` to rollback your last installation directly from the TUI
+* **Remove Versions**: Press `X` to remove installed Python versions
+
+Try it: `pyvm tui` or `pyvm rollback`
 
 ## CRITICAL UPDATE (v1.2.1)
 
@@ -64,7 +66,10 @@ pyvm tui        # Launch interactive TUI (NEW!)
 
 ### Safety & Intelligence
 * Safe: Never modifies your system Python defaults
+* SHA256 Verified: All downloads verified against official checksums (NEW in v2.1.0!)
 * Smart Installation: Auto-detects and uses mise, pyenv, or system package managers
+* Auto pyenv Setup: Automatically installs pyenv on RHEL/CentOS/Fedora if needed
+* Rollback Support: Undo installations with `pyvm rollback`
 * Multiple Versions: All Python versions coexist peacefully
 * Clear Instructions: Shows exactly how to use newly installed versions
 
@@ -400,8 +405,10 @@ pyvm uses an intelligent fallback chain to install Python:
 | `pyvm tui` | Launch interactive TUI (NEW) |
 | `pyvm list` | List available Python versions (NEW) |
 | `pyvm list --all` | Show all versions including patches (NEW) |
-| `pyvm install <version>` | Install specific Python version (NEW) |
-| `pyvm install <version> *y` | Install without confirmation (NEW) |
+| `pyvm install <version>` | Install specific Python version |
+| `pyvm install <version> -y` | Install without confirmation |
+| `pyvm rollback` | Rollback to previous Python state (NEW) |
+| `pyvm rollback -y` | Rollback without confirmation (NEW) |
 | `pyvm update` | Update Python to latest version |
 | `pyvm update --version 3.11.5` | Update to a specific Python version |
 | `pyvm update --auto` | Update without confirmation |
@@ -418,6 +425,8 @@ pyvm uses an intelligent fallback chain to install Python:
 | **Enter** | Install selected version |
 | **1** / **2** | Jump to Installed / Available panel |
 | **U** | Update to latest Python |
+| **B** | Rollback last installation (NEW) |
+| **X** | Remove selected version (NEW) |
 | **R** | Refresh data |
 | **T** | Toggle theme (dark/light) |
 | **?** | Show help |

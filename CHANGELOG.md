@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-01-14
+
+### Added
+- **SHA256 Checksum Verification**: All Python downloads are now verified against official checksums from python.org
+  - Calculates SHA256 hash of downloaded files
+  - Fetches expected checksum from python.org
+  - Blocks installation if checksum mismatch detected
+- **Rollback Command**: New `pyvm rollback` command to undo previous installations
+  - Tracks installation history (last 10 entries)
+  - Removes last installed Python version
+  - Available in both CLI (`pyvm rollback`) and TUI (press `B`)
+- **Auto pyenv Installation**: Automatically installs pyenv on RHEL/CentOS/Fedora systems
+  - Installs required build dependencies via dnf/yum
+  - Downloads and configures pyenv using official installer
+  - Sets up shell environment automatically
+- **Remove Version from TUI**: Press `X` to remove selected installed Python version
+- **Type Hints**: Added comprehensive type hints to `check_requirements.py`
+
+### Changed
+- Migrated from `setup.py` to `pyproject.toml` for modern Python packaging
+- Improved code formatting with pre-commit hooks
+- Enhanced error handling for installer execution and cleanup
+
+### Fixed
+- Various spelling corrections and code formatting improvements
+
 ## [2.0.1] - 2026-01-10
 
 ### Changed
