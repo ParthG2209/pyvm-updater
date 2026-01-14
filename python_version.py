@@ -589,6 +589,71 @@ def update_python_windows(version_str: str) -> bool:
             print(f"Warning: Could not delete temporary file {installer_path}: {e}")
 
 
+def install_pyenv_linux() -> bool:
+    """Install pyenv on Linux (yum/dnf systems)"""
+    print("\n[Linux] Installing pyenv...")
+
+    if not shutil.which("curl"):
+        print("Error: 'curl' is required to install pyenv. Please install it first.")
+        return False
+
+    if not shutil.which("bash"):
+        print("Error: 'bash' is required to install pyenv. Please install it first.")
+        return False
+
+    pkg_mgr = "dnf" if shutil.which("dnf") else "yum"
+
+    # 1. Install dependencies
+    print(f"Installing build dependencies via {pkg_mgr}...")
+    # Common dependencies for building Python on RHEL/CentOS/Fedora
+    deps = [
+        "git", "gcc", "zlib-devel", "bzip2-devel", "readline-devel",
+        "sqlite-devel", "openssl-devel", "xz-devel", "libffi-devel", "findutils"
+    ]
+
+    try:
+        # Check if sudo is available
+        if shutil.which("sudo"):
+            subprocess.run(["sudo", pkg_mgr, "install", "-y"] + deps, check=True)
+        else:
+            print("Warning: 'sudo' not found. Trying to install without it...")
+            subprocess.run([pkg_mgr, "install", "-y"] + deps, check=True)
+    except Exception as e:
+        print(f"Error installing dependencies: {e}")
+        print("You might need to install them manually: sudo {} install -y {}".format(pkg_mgr, " ".join(deps)))
+        return False
+
+    # 2. Run pyenv-installer
+    print("Running pyenv-installer (https://pyenv.run)...")
+    try:
+        # We use curl | bash approach as recommended by pyenv
+        install_cmd = "curl https://pyenv.run | bash"
+        subprocess.run(install_cmd, shell=True, check=True)
+    except Exception as e:
+        print(f"Error running pyenv-installer: {e}")
+        return False
+
+    # 3. Update the current process's PATH so we can use pyenv immediately
+    pyenv_root = os.path.expanduser("~/.pyenv")
+    os.environ["PYENV_ROOT"] = pyenv_root
+
+    # Construct new PATH
+    bin_path = os.path.join(pyenv_root, "bin")
+    shim_path = os.path.join(pyenv_root, "shims")
+    os.environ["PATH"] = f"{bin_path}:{shim_path}:" + os.environ.get("PATH", "")
+
+    # 4. Final verification and instructions
+    print("\n[OK] pyenv installed successfully!")
+    print("\nIMPORTANT: To use pyenv in future terminal sessions, add this to your ~/.bashrc or ~/.bash_profile:")
+    print("-" * 60)
+    print('export PYENV_ROOT="$HOME/.pyenv"')
+    print('[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"')
+    print('eval "$(pyenv init -)"')
+    print("-" * 60)
+
+    return True
+
+
 def update_python_linux(version_str: str) -> bool:
     """Install Python on Linux using mise, pyenv, or package manager"""
     print("\n[Linux] Installing Python...")
@@ -689,8 +754,29 @@ def update_python_linux(version_str: str) -> bool:
     elif shutil.which("dnf") or shutil.which("yum"):
         pkg_mgr = "dnf" if shutil.which("dnf") else "yum"
         print(f"Using {pkg_mgr}...")
-        print(f"\nRun manually: sudo {pkg_mgr} install python3")
-        print("Consider installing mise or pyenv for version control.")
+        
+        # Offer to install pyenv automatically
+        print(f"\nSpecific Python versions (like {version_str}) might not be available in {pkg_mgr}.")
+        if click.confirm(f"Would you like to install pyenv automatically to manage Python {version_str}?"):
+            if install_pyenv_linux():
+                # Re-check for pyenv after installation
+                if shutil.which("pyenv"):
+                    print(f"Using newly installed pyenv to install Python {version_str}...")
+                    try:
+                        result = subprocess.run(["pyenv", "install", version_str], check=False, capture_output=False)
+                        if result.returncode == 0:
+                            print(f"\n[OK] Python {version_str} installed via pyenv!")
+                            print("\nTo use this version:")
+                            print(f"  pyenv local {version_str}   # Use in current directory")
+                            print(f"  pyenv global {version_str}  # Set as global default")
+                            return True
+                        else:
+                            print("pyenv installation failed.")
+                    except Exception as e:
+                        print(f"pyenv error: {e}")
+            
+        print(f"\nAlternatively, you can try to install manually: sudo {pkg_mgr} install python3")
+        print("Or install mise for version control: https://mise.run")
         return False
 
     else:
@@ -1674,3 +1760,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    
