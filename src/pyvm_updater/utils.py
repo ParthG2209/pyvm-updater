@@ -35,7 +35,8 @@ def is_admin() -> bool:
     try:
         if platform.system().lower() == "windows":
             import ctypes
-            return ctypes.windll.shell32.IsUserAnAdmin() != 0  # type: ignore[attr-defined]
+
+            return bool(ctypes.windll.shell32.IsUserAnAdmin())  # type: ignore[attr-defined]
         else:
             return hasattr(os, "geteuid") and os.geteuid() == 0
     except Exception:

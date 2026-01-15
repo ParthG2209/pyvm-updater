@@ -11,11 +11,11 @@ logger = logging.getLogger("pyvm")
 
 def setup_logging(verbose: bool = False, quiet: bool = False) -> logging.Logger:
     """Configure logging for pyvm.
-    
+
     Args:
         verbose: If True, show DEBUG level messages.
         quiet: If True, only show WARNING and above.
-    
+
     Returns:
         Configured logger instance.
     """
@@ -39,10 +39,7 @@ def setup_logging(verbose: bool = False, quiet: bool = False) -> logging.Logger:
 
     # Simple format for CLI output
     if verbose:
-        formatter = logging.Formatter(
-            "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-            datefmt="%H:%M:%S"
-        )
+        formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s", datefmt="%H:%M:%S")
     else:
         # Clean format for normal use
         formatter = logging.Formatter("%(message)s")
@@ -55,11 +52,11 @@ def setup_logging(verbose: bool = False, quiet: bool = False) -> logging.Logger:
 
 def get_logger(name: str | None = None) -> logging.Logger:
     """Get a logger instance.
-    
+
     Args:
         name: Optional submodule name (e.g., "version", "installers").
               If None, returns the root pyvm logger.
-    
+
     Returns:
         Logger instance.
     """

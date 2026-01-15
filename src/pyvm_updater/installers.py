@@ -31,8 +31,16 @@ def install_pyenv_linux() -> bool:
     pkg_mgr = "dnf" if shutil.which("dnf") else "yum"
 
     deps = [
-        "git", "gcc", "zlib-devel", "bzip2-devel", "readline-devel",
-        "sqlite-devel", "openssl-devel", "xz-devel", "libffi-devel", "findutils",
+        "git",
+        "gcc",
+        "zlib-devel",
+        "bzip2-devel",
+        "readline-devel",
+        "sqlite-devel",
+        "openssl-devel",
+        "xz-devel",
+        "libffi-devel",
+        "findutils",
     ]
 
     try:
@@ -353,8 +361,7 @@ def remove_python_windows(version_str: str) -> bool:
         for pkg_id in potential_ids:
             try:
                 result = subprocess.run(
-                    ["winget", "uninstall", "--id", pkg_id, "--silent"],
-                    capture_output=True, text=True, check=False
+                    ["winget", "uninstall", "--id", pkg_id, "--silent"], capture_output=True, text=True, check=False
                 )
                 if result.returncode == 0:
                     print(f"[OK] Python {version_str} removed via winget")
@@ -392,7 +399,9 @@ def remove_python_linux(version_str: str) -> bool:
         try:
             result = subprocess.run(
                 ["mise", "uninstall", f"python@{version_str}"],
-                check=False, capture_output=True, text=True,
+                check=False,
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 print(f"[OK] Python {version_str} uninstalled via mise.")
@@ -405,7 +414,9 @@ def remove_python_linux(version_str: str) -> bool:
         try:
             result = subprocess.run(
                 ["pyenv", "uninstall", "-f", version_str],
-                check=False, capture_output=True, text=True,
+                check=False,
+                capture_output=True,
+                text=True,
             )
             if result.returncode == 0:
                 print(f"[OK] Python {version_str} uninstalled via pyenv.")

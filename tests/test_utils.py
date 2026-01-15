@@ -1,6 +1,5 @@
 """Tests for pyvm_updater.utils module."""
 
-
 from pyvm_updater.utils import get_os_info, validate_version_string
 
 

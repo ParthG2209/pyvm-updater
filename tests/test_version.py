@@ -20,6 +20,7 @@ class TestGetInstalledPythonVersions:
     def test_contains_current_version(self):
         """Test that current Python version is in the list."""
         import platform
+
         current_ver = platform.python_version()
         result = get_installed_python_versions()
         versions = [v["version"] for v in result]
@@ -66,6 +67,7 @@ class TestIsPythonVersionInstalled:
     def test_current_version_is_installed(self):
         """Test that current Python version is detected as installed."""
         import platform
+
         current_ver = platform.python_version()
         assert is_python_version_installed(current_ver) is True
 
@@ -76,7 +78,11 @@ class TestIsPythonVersionInstalled:
     def test_major_minor_match(self):
         """Test that major.minor match works."""
         import platform
+
         parts = platform.python_version().split(".")
         major_minor = f"{parts[0]}.{parts[1]}"
         # This should find it via the major_minor fallback
-        assert is_python_version_installed(f"{major_minor}.999") is True or is_python_version_installed(major_minor) is True
+        assert (
+            is_python_version_installed(f"{major_minor}.999") is True
+            or is_python_version_installed(major_minor) is True
+        )

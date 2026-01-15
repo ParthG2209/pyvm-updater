@@ -44,12 +44,12 @@ def cli(ctx: click.Context, version: bool, verbose: bool, quiet: bool) -> None:
     """Python Version Manager - Check and install Python (does NOT modify system defaults)"""
     # Initialize logging
     setup_logging(verbose=verbose, quiet=quiet)
-    
+
     # Store config in context for subcommands
     ctx.ensure_object(dict)
     ctx.obj["config"] = get_config()
     ctx.obj["verbose"] = verbose
-    
+
     if version:
         click.echo(f"Python Version Manager v{__version__}")
         ctx.exit()
@@ -383,6 +383,7 @@ def tui() -> None:
     """Launch the interactive TUI interface."""
     try:
         from .tui import run_tui
+
         run_tui()
     except ImportError:
         click.echo("❌ TUI mode requires the 'textual' package.")
@@ -430,7 +431,7 @@ def info() -> None:
 def config(show: bool, init_config: bool, path: bool) -> None:
     """View or manage pyvm configuration."""
     from .config import CONFIG_FILE
-    
+
     if path:
         click.echo(f"Config file: {CONFIG_FILE}")
         if CONFIG_FILE.exists():
@@ -438,12 +439,12 @@ def config(show: bool, init_config: bool, path: bool) -> None:
         else:
             click.echo("Status: not created (using defaults)")
         return
-    
+
     if init_config:
         if CONFIG_FILE.exists():
             click.echo(f"Config file already exists: {CONFIG_FILE}")
             return
-        
+
         cfg = Config()
         if cfg.save():
             click.echo(f"Created config file: {CONFIG_FILE}")
@@ -451,7 +452,7 @@ def config(show: bool, init_config: bool, path: bool) -> None:
             click.echo("Failed to create config file.")
             sys.exit(1)
         return
-    
+
     # Default: show current config
     cfg = get_config()
     click.echo("Current Configuration:")
@@ -483,7 +484,7 @@ def venv() -> None:
 @click.option("--system-site-packages", is_flag=True, help="Include system site-packages")
 def venv_create(name: str, python_version: str | None, path: str | None, system_site_packages: bool) -> None:
     """Create a new virtual environment.
-    
+
     Examples:
         pyvm venv create myproject
         pyvm venv create myproject --python 3.12
@@ -492,25 +493,26 @@ def venv_create(name: str, python_version: str | None, path: str | None, system_
     from pathlib import Path as PathLib
 
     from .venv import create_venv
-    
+
     venv_path = PathLib(path) if path else None
-    
+
     click.echo(f"Creating venv '{name}'...")
     if python_version:
         click.echo(f"Using Python {python_version}")
-    
+
     success, message = create_venv(
         name=name,
         python_version=python_version,
         path=venv_path,
         system_site_packages=system_site_packages,
     )
-    
+
     if success:
         click.echo(f"✅ {message}")
-        
+
         # Show activation command
         from .venv import get_venv_activate_command
+
         activate_cmd = get_venv_activate_command(name)
         if activate_cmd:
             click.echo(f"\n💡 To activate: {activate_cmd}")
@@ -526,9 +528,9 @@ def venv_list(as_json: bool) -> None:
     import json as json_module
 
     from .venv import list_venvs
-    
+
     venvs = list_venvs()
-    
+
     if not venvs:
         if as_json:
             click.echo("[]")
@@ -536,7 +538,7 @@ def venv_list(as_json: bool) -> None:
             click.echo("No virtual environments found.")
             click.echo("\nCreate one with: pyvm venv create <name>")
         return
-    
+
     if as_json:
         click.echo(json_module.dumps(venvs, indent=2))
     else:
@@ -554,23 +556,24 @@ def venv_list(as_json: bool) -> None:
 def venv_remove(name: str, yes: bool) -> None:
     """Remove a virtual environment."""
     from .venv import get_venv_registry, remove_venv
-    
+
     registry = get_venv_registry()
-    
+
     if name not in registry:
         from .venv import get_venv_dir
+
         venv_path = get_venv_dir() / name
         if not venv_path.exists():
             click.echo(f"❌ Venv '{name}' not found.")
             sys.exit(1)
-    
+
     if not yes:
         if not click.confirm(f"Remove venv '{name}'?"):
             click.echo("Cancelled.")
             return
-    
+
     success, message = remove_venv(name)
-    
+
     if success:
         click.echo(f"✅ {message}")
     else:
@@ -583,9 +586,9 @@ def venv_remove(name: str, yes: bool) -> None:
 def venv_activate(name: str) -> None:
     """Show how to activate a virtual environment."""
     from .venv import get_venv_activate_command
-    
+
     activate_cmd = get_venv_activate_command(name)
-    
+
     if activate_cmd:
         click.echo(f"To activate '{name}':")
         click.echo(f"\n  {activate_cmd}\n")

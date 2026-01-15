@@ -51,12 +51,14 @@ def get_installed_python_versions() -> list[dict[str, Any]]:
                             full_path = os.path.join(mise_python_dir, entry, "bin", "python3")
                             if os.path.exists(full_path):
                                 found.add(ver)
-                                versions.append({
-                                    "version": ver,
-                                    "path": full_path,
-                                    "default": full_path == sys.executable
-                                    or sys.executable.startswith(os.path.join(mise_python_dir, entry)),
-                                })
+                                versions.append(
+                                    {
+                                        "version": ver,
+                                        "path": full_path,
+                                        "default": full_path == sys.executable
+                                        or sys.executable.startswith(os.path.join(mise_python_dir, entry)),
+                                    }
+                                )
             except PermissionError:
                 pass
 
@@ -72,7 +74,9 @@ def get_installed_python_versions() -> list[dict[str, Any]]:
                             full_path = os.path.join(pyenv_versions_dir, entry, "bin", "python3")
                             if os.path.exists(full_path):
                                 found.add(ver)
-                                versions.append({"version": ver, "path": full_path, "default": full_path == sys.executable})
+                                versions.append(
+                                    {"version": ver, "path": full_path, "default": full_path == sys.executable}
+                                )
             except PermissionError:
                 pass
 
@@ -99,11 +103,13 @@ def get_installed_python_versions() -> list[dict[str, Any]]:
                                         )
                                         if result.returncode == 0:
                                             full_ver = result.stdout.strip().replace("Python ", "")
-                                            versions.append({
-                                                "version": full_ver,
-                                                "path": full_path,
-                                                "default": full_path == sys.executable,
-                                            })
+                                            versions.append(
+                                                {
+                                                    "version": full_ver,
+                                                    "path": full_path,
+                                                    "default": full_path == sys.executable,
+                                                }
+                                            )
                                     except Exception:
                                         versions.append({"version": ver, "path": full_path, "default": False})
                 except PermissionError:
@@ -223,13 +229,15 @@ def get_active_python_releases() -> list[dict[str, Any]]:
                     if not status or status.startswith("Looking for"):
                         break
 
-                    releases.append({
-                        "series": series,
-                        "status": status,
-                        "first_release": first_release,
-                        "end_of_support": end_support,
-                        "latest_version": None,
-                    })
+                    releases.append(
+                        {
+                            "series": series,
+                            "status": status,
+                            "first_release": first_release,
+                            "end_of_support": end_support,
+                            "latest_version": None,
+                        }
+                    )
                     i += 6
                 else:
                     i += 1

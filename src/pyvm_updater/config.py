@@ -76,12 +76,12 @@ class Config:
 
     def get(self, section: str, key: str, default: Any = None) -> Any:
         """Get a configuration value.
-        
+
         Args:
             section: Config section (e.g., "general", "download").
             key: Config key within section.
             default: Default value if not found.
-        
+
         Returns:
             Configuration value or default.
         """
@@ -92,7 +92,7 @@ class Config:
 
     def set(self, section: str, key: str, value: Any) -> None:
         """Set a configuration value (runtime only, not persisted).
-        
+
         Args:
             section: Config section.
             key: Config key.
@@ -139,13 +139,13 @@ class Config:
 
     def save(self) -> bool:
         """Save current configuration to file.
-        
+
         Returns:
             True if saved successfully, False otherwise.
         """
         try:
             CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-            
+
             # Format config as TOML manually (avoid dependency)
             lines = []
             for section, values in self._config.items():
@@ -158,7 +158,7 @@ class Config:
                     else:
                         lines.append(f"{key} = {value}")
                 lines.append("")
-            
+
             with open(CONFIG_FILE, "w") as f:
                 f.write("\n".join(lines))
             return True
@@ -168,13 +168,13 @@ class Config:
     @staticmethod
     def create_default_config() -> bool:
         """Create default config file if it doesn't exist.
-        
+
         Returns:
             True if created, False if already exists or error.
         """
         if CONFIG_FILE.exists():
             return False
-        
+
         config = Config()
         return config.save()
 
