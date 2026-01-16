@@ -152,7 +152,7 @@ def update_python_windows(version_str: str) -> bool:
             if os.path.exists(installer_path):
                 os.remove(installer_path)
         except OSError:
-            pass 
+            pass
 
 
 def update_python_linux(version_str: str, build_from_source: bool = False) -> bool:
@@ -162,7 +162,7 @@ def update_python_linux(version_str: str, build_from_source: bool = False) -> bo
     if build_from_source:
         print(f"⚙️ Preparing build environment for {version_str}...")
         # Step 1: Ensure dependencies are installed using existing project logic
-        install_pyenv_linux() 
+        install_pyenv_linux()
 
         # Step 2: Define paths using author's filesystem pattern
         source_url = f"https://www.python.org/ftp/python/{version_str}/Python-{version_str}.tar.xz"
@@ -178,14 +178,13 @@ def update_python_linux(version_str: str, build_from_source: bool = False) -> bo
         try:
             print("📦 Extracting and Compiling (this will take a few minutes)...")
             subprocess.run(["tar", "-xf", source_path, "-C", temp_dir], check=True)
-            
-            # Step 4: Parallel build optimization using os.cpu_count()
-            cpu_cores = os.cpu_count() or 2
-            build_cmd = (
-                f"cd {build_dir} && ./configure --enable-optimizations && "
-                f"make -j{cpu_cores} && sudo make altinstall"
-            )
-            subprocess.run(build_cmd, shell=True, check=True)
+
+            # Step 4: Safe parallel build (No shell=True)
+            cpu_cores = str(os.cpu_count() or 2)
+            subprocess.run(["./configure", "--enable-optimizations"], cwd=build_dir, check=True)
+            subprocess.run(["make", f"-j{cpu_cores}"], cwd=build_dir, check=True)
+            subprocess.run(["sudo", "make", "altinstall"], cwd=build_dir, check=True)
+
             return True
         except Exception as e:
             print(f"❌ Build failed: {e}")

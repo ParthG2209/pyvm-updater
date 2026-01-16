@@ -346,7 +346,7 @@ def update(auto: bool, target_version: str | None, build_from_source: bool = Fal
             click.echo(f"\n🚀 Update available: {local_ver} → {latest_ver}")
             install_version = latest_ver
 
-        if not auto: 
+        if not auto:
             if not click.confirm(f"\nDo you want to proceed with installing Python {install_version}?"):
                 click.echo("Installation cancelled.")
                 sys.exit(0)
@@ -494,7 +494,7 @@ def venv_create(name: str, python_version: str | None, path: str | None, system_
     """
     from pathlib import Path as PathLib
 
-    from .venv import create_venv 
+    from .venv import create_venv
 
     venv_path = PathLib(path) if path else None
 
