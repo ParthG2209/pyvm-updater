@@ -9,7 +9,6 @@ import sys
 
 import click
 
-
 from . import __version__
 from .config import Config, get_config
 from .constants import HISTORY_FILE
@@ -32,18 +31,12 @@ from .version import (
     get_latest_python_info_with_retry,
 )
 
-
-
 # Module logger
 log = get_logger("cli")
 
 
-
-
-
 @click.group(invoke_without_command=True)
 @click.pass_context
-
 @click.option("--version", "-v", is_flag=True, help="Show tool version")
 @click.option("--verbose", "-V", is_flag=True, help="Enable verbose output")
 @click.option("--quiet", "-q", is_flag=True, help="Suppress non-essential output")
