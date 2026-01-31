@@ -10,6 +10,16 @@ import time
 
 import click
 import requests
+# rich.progress is used for the enhanced CLI download progress bar (speed, ETA, etc.)
+from rich.progress import (
+    BarColumn,
+    DownloadColumn,
+    Progress,
+    SpinnerColumn,
+    TextColumn,
+    TimeRemainingColumn,
+    TransferSpeedColumn,
+)
 
 from .constants import DOWNLOAD_TIMEOUT, MAX_RETRIES, REQUEST_TIMEOUT, RETRY_DELAY
 
@@ -93,7 +103,16 @@ def verify_file_checksum(file_path: str, checksum_url: str) -> bool:
 
 
 def download_file(url: str, destination: str, max_retries: int = MAX_RETRIES) -> bool:
-    """Download a file with retry logic, progress indication, and cleanup."""
+    """
+    Download a file with retry logic and enhanced progress indication.
+
+    Uses rich.progress to show:
+    - A spinner and progress bar
+    - Completion percentage
+    - Total and downloaded file size
+    - Real-time download speed
+    - Estimated time remaining (ETA)
+    """
     if not url.startswith(("http://", "https://")):
         click.echo(f"❌ Invalid URL: {url}")
         return False
@@ -111,19 +130,26 @@ def download_file(url: str, destination: str, max_retries: int = MAX_RETRIES) ->
             total_size = int(response.headers.get("content-length", 0))
             chunk_size = 8192
 
+            # Use Rich for a modern progress bar with speed and ETA
             with (
                 open(destination, "wb") as f,
-                click.progressbar(
-                    length=total_size,
-                    label="⬇ Downloading",
-                    show_eta=True,
-                    show_percent=True,
-                ) as bar,
+                Progress(
+                    SpinnerColumn(),
+                    TextColumn("[progress.description]{task.description}"),
+                    BarColumn(),
+                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                    DownloadColumn(),
+                    TransferSpeedColumn(),
+                    TimeRemainingColumn(),
+                ) as progress,
             ):
+                # Add download task to the progress manager
+                task = progress.add_task("⬇ Downloading", total=total_size)
                 for chunk in response.iter_content(chunk_size=chunk_size):
                     if chunk:
                         f.write(chunk)
-                        bar.update(len(chunk))
+                        # Update progress by the number of bytes downloaded
+                        progress.update(task, advance=len(chunk))
 
             if not os.path.exists(destination):
                 click.echo("❌ Download failed: file not found")
