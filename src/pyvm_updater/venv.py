@@ -189,10 +189,20 @@ def create_venv(
             pip_cmd.extend(["install", "-r", str(requirements_file)])
             
             try:
-                subprocess.run(pip_cmd, check=True, capture_output=True, text=True)
+                # Upgrade pip first (optional helper)
+                # subprocess.run(pip_cmd + ["install", "--upgrade", "pip"], capture_output=True, check=False)
+
+                # Install requirements
+                install_result = subprocess.run(
+                    pip_cmd + ["install", "-r", str(requirements_file)], 
+                    capture_output=True, 
+                    text=True, 
+                    check=True
+                )
                 success_msg += f"\n   Installed requirements from {requirements_file.name}"
             except subprocess.CalledProcessError as e:
-                return True, f"{success_msg}\n   ⚠️ Warning: Failed to install requirements: {e.stderr or e.stdout}"
+                error_output = e.stderr or e.stdout
+                return True, f"{success_msg}\n   ⚠️ Warning: Failed to install requirements from {requirements_file.name}:\n{error_output}"
 
         return True, success_msg
 
