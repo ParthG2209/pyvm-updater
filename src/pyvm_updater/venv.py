@@ -176,7 +176,7 @@ def create_venv(
                 pip_exe = venv_path / "Scripts" / "pip.exe"
             else:
                 pip_exe = venv_path / "bin" / "pip"
-            
+
             if not pip_exe.exists():
                 if os_name == "windows":
                     python_in_venv = venv_path / "Scripts" / "python.exe"
@@ -185,24 +185,25 @@ def create_venv(
                 pip_cmd = [str(python_in_venv), "-m", "pip"]
             else:
                 pip_cmd = [str(pip_exe)]
-            
+
             pip_cmd.extend(["install", "-r", str(requirements_file)])
-            
+
             try:
                 # Upgrade pip first (optional helper)
                 # subprocess.run(pip_cmd + ["install", "--upgrade", "pip"], capture_output=True, check=False)
 
                 # Install requirements
-                install_result = subprocess.run(
-                    pip_cmd + ["install", "-r", str(requirements_file)], 
-                    capture_output=True, 
-                    text=True, 
-                    check=True
+                subprocess.run(
+                    pip_cmd + ["install", "-r", str(requirements_file)], capture_output=True, text=True, check=True
                 )
                 success_msg += f"\n   Installed requirements from {requirements_file.name}"
             except subprocess.CalledProcessError as e:
                 error_output = e.stderr or e.stdout
-                return True, f"{success_msg}\n   ⚠️ Warning: Failed to install requirements from {requirements_file.name}:\n{error_output}"
+                return (
+                    True,
+                    f"{success_msg}\n   ⚠️ Warning: Failed to install requirements from {requirements_file.name}:\n"
+                    f"{error_output}",
+                )
 
         return True, success_msg
 
