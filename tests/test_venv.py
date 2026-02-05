@@ -58,10 +58,10 @@ class TestCreateVenv:
 
         assert success is True
         assert "Installed requirements" in message
-        
+
         # Verify pip install was called
         assert mock_run.call_count == 2
-        
+
         args, _ = mock_run.call_args_list[1]
         cmd = args[0]
         assert "install" in cmd
