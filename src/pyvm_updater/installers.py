@@ -92,7 +92,7 @@ def update_python_windows(version_str: str) -> bool:
         if len(parts) < 3:
             print(f"Error: Version must be major.minor.patch format: {version_str}")
             return False
-        major, minor, _patch = parts[0], parts[1], parts[2]
+        major, minor = parts[0], parts[1]
     except (ValueError, IndexError) as e:
         print(f"Error parsing version: {e}")
         return False
