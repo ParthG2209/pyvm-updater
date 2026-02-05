@@ -485,7 +485,9 @@ def venv() -> None:
 @click.option("--path", type=click.Path(), help="Custom path for the venv")
 @click.option("--system-site-packages", is_flag=True, help="Include system site-packages")
 @click.option("--requirements", "-r", type=click.Path(exists=True), help="Install dependencies from requirements file")
-def venv_create(name: str, python_version: str | None, path: str | None, system_site_packages: bool, requirements: str | None) -> None:
+def venv_create(
+    name: str, python_version: str | None, path: str | None, system_site_packages: bool, requirements: str | None
+) -> None:
     """Create a new virtual environment.
 
     Examples:
