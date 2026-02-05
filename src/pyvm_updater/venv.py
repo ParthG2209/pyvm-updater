@@ -186,8 +186,6 @@ def create_venv(
             else:
                 pip_cmd = [str(pip_exe)]
 
-            pip_cmd.extend(["install", "-r", str(requirements_file)])
-
             try:
                 # Upgrade pip first (optional helper)
                 # subprocess.run(pip_cmd + ["install", "--upgrade", "pip"], capture_output=True, check=False)
