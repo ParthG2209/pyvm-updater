@@ -12,37 +12,7 @@ from .plugins.manager import get_plugin_manager
 
 def update_python_windows(version_str: str, preferred: str = "auto", **kwargs: Any) -> bool:
     """Update Python on Windows."""
-    print("\n🪟 Windows detected - Downloading Python installer...")
-
-    if not validate_version_string(version_str):
-        print(f"Error: Invalid version string: {version_str}")
-        return False
-
-    try:
-        parts = version_str.split(".")
-        if len(parts) < 3:
-            print(f"Error: Version must be major.minor.patch format: {version_str}")
-            return False
-        major, minor = parts[0], parts[1]
-    except (ValueError, IndexError) as e:
-        print(f"Error parsing version: {e}")
-        return False
-
-    machine = platform.machine().lower()
-    if machine in ["amd64", "x86_64"]:
-        arch = "amd64"
-    elif machine in ["arm64", "aarch64"]:
-        try:
-            major_int, minor_int = int(major), int(minor)
-            if major_int < 3 or (major_int == 3 and minor_int < 11):
-                print("ARM64 installers are only available for Python 3.11+")
-                arch = "amd64"
-            else:
-                arch = "arm64"
-        except (ValueError, TypeError):
-            arch = "amd64"
-    else:
-        arch = "win32"
+    return _install_with_plugins(version_str, preferred=preferred)
 
 
 def update_python_linux(
@@ -73,7 +43,8 @@ def _install_with_plugins(version_str: str, preferred: str = "auto", **kwargs: A
 
     if preferred != "auto" and installer.get_name() != preferred:
         click.echo(
-            f"⚠️  Requested installer '{preferred}' is not supported or not found. Falling back to '{installer.get_name()}'."
+            f"⚠️  Requested installer '{preferred}' is not supported or not found. "
+            f"Falling back to '{installer.get_name()}'."
         )
 
     return installer.install(version_str, **kwargs)
