@@ -39,7 +39,8 @@ def _install_with_plugins(version_str: str, preferred: str = "auto") -> bool:
 
     if preferred != "auto" and installer.get_name() != preferred:
         click.echo(
-            f"⚠️  Requested installer '{preferred}' is not supported or not found. Falling back to '{installer.get_name()}'."
+            f"⚠️  Requested installer '{preferred}' is not supported or not found. "
+            f"Falling back to '{installer.get_name()}'."
         )
 
     return installer.install(version_str)
