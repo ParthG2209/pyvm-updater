@@ -140,7 +140,10 @@ def create_venv(
     if python_version:
         python_exe = find_python_executable(python_version)
         if not python_exe:
-            return False, f"Python {python_version} not found. Install it first with: pyvm install {python_version}.0"
+            return (
+                False,
+                f"Python {python_version} not found. Install it first with: pyvm install {python_version}.0",
+            )
     else:
         python_exe = sys.executable
         python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
@@ -206,7 +209,10 @@ def create_venv(
         return True, success_msg
 
     except subprocess.CalledProcessError as e:
-        return False, f"Failed to create venv: {e.stderr or e.stdout or str(e)}"
+        return (
+            False,
+            f"Failed to create venv: {e.stderr or e.stdout or str(e)}",
+        )
     except OSError as e:
         return False, f"Failed to create venv: {e}"
 
