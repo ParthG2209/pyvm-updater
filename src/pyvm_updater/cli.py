@@ -685,6 +685,7 @@ def use_version(version: str) -> None:
     import os
     import shutil
     import tempfile
+
     from .venv import find_python_executable
 
     try:

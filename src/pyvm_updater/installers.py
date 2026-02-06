@@ -3,26 +3,6 @@
 from __future__ import annotations
 
 import click
-import requests  # type: ignore
-
-from .constants import REQUEST_TIMEOUT
-from .utils import download_file, validate_version_string, verify_file_checksum
-from .version import is_python_version_installed
-
-
-def install_pyenv_linux() -> bool:
-    """Install pyenv on Linux (yum/dnf systems)."""
-    print("\n[Linux] Installing pyenv...")
-
-    if not shutil.which("curl"):
-        print("Error: 'curl' is required to install pyenv.")
-        return False
-
-    if not shutil.which("bash"):
-        print("Error: 'bash' is required to install pyenv.")
-        return False
-
-    pkg_mgr = "dnf" if shutil.which("dnf") else "yum"
 
 from .config import get_config
 from .plugins.manager import get_plugin_manager
@@ -30,37 +10,7 @@ from .plugins.manager import get_plugin_manager
 
 def update_python_windows(version_str: str, preferred: str = "auto") -> bool:
     """Update Python on Windows."""
-    print("\n🪟 Windows detected - Downloading Python installer...")
-
-    if not validate_version_string(version_str):
-        print(f"Error: Invalid version string: {version_str}")
-        return False
-
-    try:
-        parts = version_str.split(".")
-        if len(parts) < 3:
-            print(f"Error: Version must be major.minor.patch format: {version_str}")
-            return False
-        major, minor = parts[0], parts[1]
-    except (ValueError, IndexError) as e:
-        print(f"Error parsing version: {e}")
-        return False
-
-    machine = platform.machine().lower()
-    if machine in ["amd64", "x86_64"]:
-        arch = "amd64"
-    elif machine in ["arm64", "aarch64"]:
-        try:
-            major_int, minor_int = int(major), int(minor)
-            if major_int < 3 or (major_int == 3 and minor_int < 11):
-                print("ARM64 installers are only available for Python 3.11+")
-                arch = "amd64"
-            else:
-                arch = "arm64"
-        except (ValueError, TypeError):
-            arch = "amd64"
-    else:
-        arch = "win32"
+    return _install_with_plugins(version_str, preferred=preferred)
 
 
 def update_python_linux(version_str: str, build_from_source: bool = False, preferred: str = "auto") -> bool:
